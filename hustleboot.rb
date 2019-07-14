@@ -4,7 +4,18 @@ require 'socket'
 require 'zlib'
 
 NOP = [0x10000000].pack('I') # Seen as a prefix to Reset command, and Check On / Off commands. 
-Check_OnOff = [0x4018001a].pack('I')
+
+def Check_OnOff(state)
+	if state = "On"
+		# 1a00 8104 0100 0000 f0ff fe3f 0000 0000 0000 0000 0000 0000 0000 0000 0000 # Check On - 0x4018001a
+		packet = [0x4018001a,0x0000f0ff,0xfe3f0000, 0xffffffff, 0xffffffff, 0x00000000, 0x00000000].pack('IIIIIII')
+	elsif state = "Off"
+		# 1a00 8104 0100 0000 f0ff fe3f 0000 ffff ffff ffff ffff 0000 0000 0000 0000 # Check Off -  0x4018001a
+		packet = [0x4018001a,0x0000f0ff,0xfe3f0000, 0x00000000, 0x00000000, 0x00000000, 0x00000000].pack('IIIIIII')
+	end
+	return packet
+end
+
 DIMM_GetInformation = [0x18000000].pack('I') # readsocket(0x10) 
 HOST_SetMode = [0x07000004, 0x00000001].pack('II')
 SECURITY_SetKeycode = [0x7F000008,0x00000000, 0x00000000].pack('III')
@@ -63,10 +74,6 @@ end
 
 
 # 0a80 8004 0000 0000 0000 0000 0000 <file contents> # Upload file - 0x04800000
-
-
-# 1a00 8104 0100 0000 f0ff fe3f 0000 0000 0000 0000 0000 0000 0000 0000 0000 # Check On - 0x4018001a
-# 1a00 8104 0100 0000 f0ff fe3f 0000 ffff ffff ffff ffff 0000 0000 0000 0000 # Check Off -  0x4018001a
 
 # sh-3.2# nc -l 10703 | xxd 
 # 
