@@ -16,9 +16,17 @@ def Check_OnOff(state)
 	return packet
 end
 
+def SECURITY_SetKeycode(msb,lsb) 
+	packet = [0x7F000008,msb, lsb].pack('III')
+	return packet
+end
+
+def HOST_SetMode (and, or) # No clue what and and or do!
+	mode = (and << 8) | or)
+	packet = [0x07000004, mode].pack('II')
+end
+
 DIMM_GetInformation = [0x18000000].pack('I') # readsocket(0x10) 
-HOST_SetMode = [0x07000004, 0x00000001].pack('II')
-SECURITY_SetKeycode = [0x7F000008,0x00000000, 0x00000000].pack('III')
 
 DIMM_Upload = [0x04800000].pack('I')
 
